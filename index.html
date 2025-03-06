@@ -172,7 +172,8 @@
           resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic yards`;
         } else {
           volume = length * width * (depth / 12);
-          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic feet`;
+          const bags = Math.ceil(volume / 2);
+          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic feet\n(approximately ${bags} bags of 2 cu ft each)`;
         }
       } else { // Circle
         const diameter = parseFloat(document.getElementById('diameter').value);
@@ -184,14 +185,15 @@
           resultDiv.innerText = 'Please enter valid positive numbers.';
           return;
         }
-        const radius = diameter / 2; // Diameter in feet to radius in feet
-        const area = Math.PI * radius * radius; // Area in sq feet
+        const radius = diameter / 2;
+        const area = Math.PI * radius * radius;
         if (unit === 'yards') {
-          volume = (area / 9) * (depth / 36); // Sq feet to sq yards, inches to yards
+          volume = (area / 9) * (depth / 36);
           resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic yards`;
         } else {
-          volume = area * (depth / 12); // Sq feet * feet
-          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic feet`;
+          volume = area * (depth / 12);
+          const bags = Math.ceil(volume / 2);
+          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic feet\n(approximately ${bags} 2 cu ft bags)`;
         }
       }
     }
