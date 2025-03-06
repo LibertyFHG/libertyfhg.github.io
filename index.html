@@ -16,9 +16,10 @@
     }
     #calc-logo {
       display: block;
-      width: 209px;
-      height: 100px;
-      margin: 0 auto 15px auto;
+      max-width: 100%; /* Ensures it doesn't exceed calculator width */
+      height: auto; /* Maintains aspect ratio */
+      margin: 0 auto 15px auto; /* Centered with bottom margin */
+      max-height: 150px; /* Caps height to prevent overflow on mobile */
     }
     label {
       display: block;
@@ -73,8 +74,7 @@
         padding: 15px;
       }
       #calc-logo {
-        width: 100%;
-        height: auto;
+        max-height: 120px; /* Slightly reduced max height for smaller screens */
       }
       button {
         width: 100%;
@@ -85,7 +85,7 @@
 </head>
 <body>
   <div id="calculator">
-    <img src="calclogo.png" id="calc-logo" alt="Calculator Logo">
+    <img src="https://raw.githubusercontent.com/yourusername/your-repo/main/calclogo.png" id="calc-logo" alt="Calculator Logo">
     <h2>How much do I need?</h2>
     <div id="shape-toggle">
       <label>Shape: 
