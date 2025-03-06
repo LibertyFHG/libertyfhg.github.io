@@ -6,17 +6,30 @@
   <title>Mulch Calculator</title>
   <style>
     #calculator {
-      max-width: 300px;
-      margin: auto;
+      max-width: 100%;
+      width: 300px;
+      margin: 20px auto;
       padding: 20px;
       border: 1px solid #ccc;
       border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
     }
     input[type="number"] {
       width: 100%;
       padding: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
-    #calculate-btn {
+    input.invalid {
+      border-color: #ff4444;
+    }
+    button {
       background-color: #8B0000;
       color: white;
       border: none;
@@ -24,37 +37,172 @@
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
+      margin-right: 10px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #a30000;
+    }
+    #shape-toggle, #unit-toggle {
+      margin: 10px 0;
+      font-size: 14px;
+    }
+    #result {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .input-group {
+      display: none;
+    }
+    .input-group.active {
+      display: block;
+    }
+    @media (max-width: 400px) {
+      #calculator {
+        width: 90%;
+        padding: 15px;
+      }
+      button {
+        width: 100%;
+        margin: 5px 0;
+      }
     }
   </style>
 </head>
 <body>
   <div id="calculator">
     <h2>How much do I need?</h2>
-    <label for="length">Length (feet):</label>
-    <input type="number" id="length" min="0" step="0.1"><br><br>
-    <label for="width">Width (feet):</label>
-    <input type="number" id="width" min="0" step="0.1"><br><br>
+    <div id="shape-toggle">
+      <label>Shape: 
+        <input type="radio" name="shape" value="rectangle" checked> Rectangle
+        <input type="radio" name="shape" value="circle"> Circle
+      </label>
+    </div>
+
+    <!-- Rectangle Inputs -->
+    <div id="rectangle-inputs" class="input-group active">
+      <label for="length">Length (feet):</label>
+      <input type="number" id="length" min="0" step="0.1"><br>
+      <label for="width">Width (feet):</label>
+      <input type="number" id="width" min="0" step="0.1"><br>
+    </div>
+
+    <!-- Circle Inputs -->
+    <div id="circle-inputs" class="input-group">
+      <label for="diameter">Diameter (feet):</label>
+      <input type="number" id="diameter" min="0" step="0.1"><br>
+    </div>
+
+    <!-- Common Depth Input -->
     <label for="depth">Depth (inches):</label>
-    <input type="number" id="depth" min="0" step="0.1"><br><br>
-    <button id="calculate-btn">Calculate</button><br><br>
+    <input type="number" id="depth" min="0" step="0.1"><br>
+
+    <div id="unit-toggle">
+      <label>Units: 
+        <input type="radio" name="unit" value="yards" checked> Cubic Yards
+        <input type="radio" name="unit" value="feet"> Cubic Feet
+      </label>
+    </div>
+
+    <button id="calculate-btn">Calculate</button>
+    <button id="reset-btn">Reset</button><br>
     <div id="result"></div>
   </div>
+
   <script>
-    var btn = document.getElementById('calculate-btn');
-    btn.addEventListener('click', calculateVolume);
-    function calculateVolume() {
-      var length = parseFloat(document.getElementById('length').value);
-      var width = parseFloat(document.getElementById('width').value);
-      var depth = parseFloat(document.getElementById('depth').value);
-      if (isNaN(length) || isNaN(width) || isNaN(depth)) {
-        document.getElementById('result').innerText = 'Please enter valid numbers.';
-        return;
+    const calculateBtn = document.getElementById('calculate-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const resultDiv = document.getElementById('result');
+    const shapeRadios = document.querySelectorAll('input[name="shape"]');
+    const inputs = document.querySelectorAll('input[type="number"]');
+    const rectangleInputs = document.getElementById('rectangle-inputs');
+    const circleInputs = document.getElementById('circle-inputs');
+
+    calculateBtn.addEventListener('click', calculateVolume);
+    resetBtn.addEventListener('click', resetForm);
+    shapeRadios.forEach(radio => radio.addEventListener('change', toggleShapeInputs));
+
+    function toggleShapeInputs() {
+      const shape = document.querySelector('input[name="shape"]:checked').value;
+      if (shape === 'rectangle') {
+        rectangleInputs.classList.add('active');
+        circleInputs.classList.remove('active');
+      } else {
+        rectangleInputs.classList.remove('active');
+        circleInputs.classList.add('active');
       }
-      var lengthYards = length / 3;
-      var widthYards = width / 3;
-      var depthYards = depth / 36;
-      var volume = lengthYards * widthYards * depthYards;
-      document.getElementById('result').innerText = 'You will need: ' + volume.toFixed(2) + ' cubic yards';
+      resetForm();
+    }
+
+    function calculateVolume() {
+      const shape = document.querySelector('input[name="shape"]:checked').value;
+      const depth = parseFloat(document.getElementById('depth').value);
+      const unit = document.querySelector('input[name="unit"]:checked').value;
+
+      inputs.forEach(input => input.classList.remove('invalid'));
+
+      let isValid = true;
+      if (isNaN(depth) || depth <= 0) {
+        document.getElementById('depth').classList.add('invalid');
+        isValid = false;
+      }
+
+      let volume;
+      if (shape === 'rectangle') {
+        const length = parseFloat(document.getElementById('length').value);
+        const width = parseFloat(document.getElementById('width').value);
+        if (isNaN(length) || length <= 0) {
+          document.getElementById('length').classList.add('invalid');
+          isValid = false;
+        }
+        if (isNaN(width) || width <= 0) {
+          document.getElementById('width').classList.add('invalid');
+          isValid = false;
+        }
+        if (!isValid) {
+          resultDiv.innerText = 'Please enter valid positive numbers.';
+          return;
+        }
+        if (unit === 'yards') {
+          volume = (length / 3) * (width / 3) * (depth / 36);
+          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic yards`;
+        } else {
+          volume = length * width * (depth / 12);
+          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic feet`;
+        }
+      } else { // Circle
+        const diameter = parseFloat(document.getElementById('diameter').value);
+        if (isNaN(diameter) || diameter <= 0) {
+          document.getElementById('diameter').classList.add('invalid');
+          isValid = false;
+        }
+        if (!isValid) {
+          resultDiv.innerText = 'Please enter valid positive numbers.';
+          return;
+        }
+        const radius = diameter / 2; // Diameter in feet to radius in feet
+        const area = Math.PI * radius * radius; // Area in sq feet
+        if (unit === 'yards') {
+          volume = (area / 9) * (depth / 36); // Sq feet to sq yards, inches to yards
+          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic yards`;
+        } else {
+          volume = area * (depth / 12); // Sq feet * feet
+          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic feet`;
+        }
+      }
+    }
+
+    function resetForm() {
+      inputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('invalid');
+      });
+      resultDiv.innerText = '';
+      document.querySelector('input[value="yards"]').checked = true;
     }
   </script>
 </body>
