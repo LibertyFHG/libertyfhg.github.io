@@ -29,6 +29,10 @@
       margin-bottom: 5px;
       font-weight: bold;
     }
+    #shape-toggle {
+      margin: 10px 0;
+      font-size: 16px;
+    }
     input[type="number"] {
       width: 100%;
       padding: 5px;
@@ -53,7 +57,7 @@
     button:hover {
       background-color: #a30000;
     }
-    #shape-toggle, #unit-toggle {
+    #unit-toggle {
       margin: 10px 0;
       font-size: 14px;
     }
@@ -64,6 +68,13 @@
       border: 1px solid #ddd;
       border-radius: 5px;
       font-weight: bold;
+    }
+    .bag-quantity {
+      background-color: #8B0000;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin: 0 4px;
     }
     .input-group {
       display: none;
@@ -118,7 +129,7 @@
     <div id="unit-toggle">
       <label>Units: 
         <input type="radio" name="unit" value="yards" checked> Cubic Yards
-        <input type="radio" name="unit" value="feet"> Cubic Feet
+        <input type="radio" name="unit" value="bags"> 2 Cu Ft Bags
       </label>
     </div>
 
@@ -183,11 +194,12 @@
         }
         if (unit === 'yards') {
           volume = (length / 3) * (width / 3) * (depth / 36);
-          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic yards`;
-        } else {
-          volume = length * width * (depth / 12);
-          const bags = Math.ceil(volume / 2);
-          resultDiv.innerHTML = `You will need: ${volume.toFixed(2)} cubic feet<br>(approximately <b style="color: #8B0000">(${bags})</b> 2 Cu Ft Bags)`;
+          const roundedVolume = Math.ceil(volume * 2) / 2; // Round up to nearest 0.5
+          resultDiv.innerHTML = `You will need: <span class="bag-quantity">${roundedVolume.toFixed(1)}</span> cubic yards`;
+        } else { // unit === 'bags'
+          volume = length * width * (depth / 12); // Calculate in cubic feet first
+          const bags = Math.ceil(volume / 2); // Convert to number of 2 cu ft bags
+          resultDiv.innerHTML = `You will need: <span class="bag-quantity">${bags}</span> 2 Cu Ft Bags`;
         }
       } else { // Circle
         const diameter = parseFloat(document.getElementById('diameter').value);
@@ -203,11 +215,12 @@
         const area = Math.PI * radius * radius;
         if (unit === 'yards') {
           volume = (area / 9) * (depth / 36);
-          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic yards`;
-        } else {
-          volume = area * (depth / 12);
-          const bags = Math.ceil(volume / 2);
-          resultDiv.innerHTML = `You will need: ${volume.toFixed(2)} cubic feet<br>(approximately <b style="color: #8B0000">(${bags})</b> 2 Cu Ft Bags)`;
+          const roundedVolume = Math.ceil(volume * 2) / 2; // Round up to nearest 0.5
+          resultDiv.innerHTML = `You will need: <span class="bag-quantity">${roundedVolume.toFixed(1)}</span> cubic yards`;
+        } else { // unit === 'bags'
+          volume = area * (depth / 12); // Calculate in cubic feet first
+          const bags = Math.ceil(volume / 2); // Convert to number of 2 cu ft bags
+          resultDiv.innerHTML = `You will need: <span class="bag-quantity">${bags}</span> 2 Cu Ft Bags`;
         }
       }
     }
@@ -218,7 +231,7 @@
         input.classList.remove('invalid');
       });
       resultDiv.innerText = '';
-      document.querySelector('input[value="yards"]').checked = true;
+      document.querySelector('input[value="yards"]').checked = true; // Reset to Cubic Yards
     }
   </script>
 </body>
