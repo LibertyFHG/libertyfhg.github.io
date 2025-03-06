@@ -173,7 +173,7 @@
         } else {
           volume = length * width * (depth / 12);
           const bags = Math.ceil(volume / 2);
-          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic feet\n(approximately ${bags} 2 Cu Ft Bags)`;
+          resultDiv.innerHTML = `You will need: ${volume.toFixed(2)} cubic feet<br>(approximately <b style="color: #8B0000">(${bags})</b> 2 Cu Ft Bags)`;
         }
       } else { // Circle
         const diameter = parseFloat(document.getElementById('diameter').value);
@@ -193,7 +193,7 @@
         } else {
           volume = area * (depth / 12);
           const bags = Math.ceil(volume / 2);
-          resultDiv.innerText = `You will need: ${volume.toFixed(2)} cubic feet\n(approximately ${bags} 2 Cu Ft Bags)`;
+          resultDiv.innerHTML = `You will need: ${volume.toFixed(2)} cubic feet<br>(approximately <b style="color: #8B0000">(${bags})</b> 2 Cu Ft Bags)`;
         }
       }
     }
